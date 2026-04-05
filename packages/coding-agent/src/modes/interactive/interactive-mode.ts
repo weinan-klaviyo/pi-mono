@@ -499,10 +499,11 @@ export class InteractiveMode {
 			}
 		} else {
 			// Minimal header when silenced
-			this.builtInHeader = new Text("", 0, 0);
+			const logo = theme.bold(theme.fg("accent", APP_NAME)) + theme.fg("dim", ` v${this.version}`);
+			const hint = theme.fg("dim", `/status for loaded resources, /hotkeys for shortcuts`);
+			this.builtInHeader = new Text(`${logo}\n${hint}`, 1, 0);
 			this.headerContainer.addChild(this.builtInHeader);
 			if (this.changelogMarkdown) {
-				// Still show changelog notification even in silent mode
 				this.headerContainer.addChild(new Spacer(1));
 				const versionMatch = this.changelogMarkdown.match(/##\s+\[?(\d+\.\d+\.\d+)\]?/);
 				const latestVersion = versionMatch ? versionMatch[1] : this.version;
@@ -2149,6 +2150,11 @@ export class InteractiveMode {
 				this.editor.setText("");
 				return;
 			}
+			if (text === "/status") {
+				this.handleStatusCommand();
+				this.editor.setText("");
+				return;
+			}
 			if (text === "/fork") {
 				this.showUserMessageSelector();
 				this.editor.setText("");
@@ -2772,6 +2778,14 @@ export class InteractiveMode {
 			updateFooter: true,
 			populateHistory: true,
 		});
+
+		// Show greeting on empty sessions
+		if (context.messages.length === 0) {
+			const hour = new Date().getHours();
+			const timeGreeting = hour < 12 ? "Good morning" : hour < 18 ? "Good afternoon" : "Good evening";
+			this.chatContainer.addChild(new Spacer(1));
+			this.chatContainer.addChild(new Text(theme.fg("text", `${timeGreeting}! How can I help you?`), 1, 0));
+		}
 
 		// Show compaction info if session was compacted
 		const allEntries = this.sessionManager.getEntries();
@@ -4444,6 +4458,11 @@ export class InteractiveMode {
 		this.chatContainer.addChild(new Spacer(1));
 		this.chatContainer.addChild(new Markdown(hotkeys.trim(), 1, 1, this.getMarkdownThemeWithSettings()));
 		this.chatContainer.addChild(new DynamicBorder());
+		this.ui.requestRender();
+	}
+
+	private handleStatusCommand(): void {
+		this.showLoadedResources({ force: true });
 		this.ui.requestRender();
 	}
 

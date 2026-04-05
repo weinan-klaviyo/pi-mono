@@ -26,6 +26,7 @@ export const BUILTIN_SLASH_COMMANDS: ReadonlyArray<BuiltinSlashCommand> = [
 	{ name: "session", description: "Show session info and stats" },
 	{ name: "changelog", description: "Show changelog entries" },
 	{ name: "hotkeys", description: "Show all keyboard shortcuts" },
+	{ name: "status", description: "Show loaded context, skills, prompts, extensions, and themes" },
 	{ name: "fork", description: "Create a new fork from a previous message" },
 	{ name: "tree", description: "Navigate session tree (switch branches)" },
 	{ name: "login", description: "Login with OAuth provider" },
